@@ -16,21 +16,21 @@ commands:
       - run:
           name: create inventory file
           command: |
-            echo "[all]" > ~/project/inventory
+            echo "[all]" > inventory
       - run:
           name: update inventory with ips
           command: |
             aws ec2 describe-instances \
                 --query "Reservations[*].Instances[*].PublicIpAddress" \
-                --output text >> ~/project/inventory
+                --output text >> inventory
       - run:
           name: list inventory file
           command: |
-            cat ~/project/inventory
+            cat inventory
       - persist_to_workspace:
-          root: ~/project
+          root: .
           paths: 
-            - inventory.txt
+            - .
 jobs:
   create_infrastructure: 
       docker:
@@ -52,25 +52,24 @@ jobs:
         - run:
             name: check per2
             command: |
-              ls ~/project
+              ls .
         - run:
             name: check per2
             command: |
-              cat ~/project/inventory.txt        
+              cat inventory        
         - destroy_infra
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - add_ssh_keys:
           fingerprints: ["a3:00:a7:22:fc:4a:5b:50:bb:ec:37:72:60:67:bc:96"] 
       - run:
           name: Install Ansible
           command: |
             apk add --update ansible
-      - attach_workspace:
-          at: ~/project
       - run:
           name: check per
           command: |
