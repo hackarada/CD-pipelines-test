@@ -20,6 +20,10 @@ commands:
           name: update inventory with ips
           command: |
             aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --output text >> inventory.txt
+      - persist_to_workspace:
+          root: ~/project
+          paths: 
+            - inventory.txt
 jobs:
   create_infrastructure: 
       docker:
@@ -33,6 +37,7 @@ jobs:
                 --template-file template.yml \
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
+        - update_inventory
         - destroy_infra
   configure_infrastructure: 
     docker:
@@ -45,8 +50,8 @@ jobs:
           name: Install Ansible
           command: |
             apk add --update ansible
-      - update_inventory
-      - destroy_infra
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Run Playbook and Configure server
           command: |
