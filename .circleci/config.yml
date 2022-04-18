@@ -28,7 +28,7 @@ jobs:
       - run:
           name: Run Playbook and Configure server
           command: |
-            ansible-playbook -i inventory.txt awsdeploy.yml
+            ansible-playbook awsdeploy.yml
 workflows:
   on_commit:
     jobs:
