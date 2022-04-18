@@ -10,6 +10,16 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+  update_inventory:
+    steps:
+      - run:
+          name: create inventory file
+          command: |
+            echo "[ubuntu]" > inventory.txt
+      - run:
+          name: update inventory with ips
+          command: |
+            aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --output text >> inventory.txt
 jobs:
   create_infrastructure: 
       docker:
@@ -35,6 +45,8 @@ jobs:
           name: Install Ansible
           command: |
             apk add --update ansible
+      - update_inventory
+      - destroy_infra
       - run:
           name: Run Playbook and Configure server
           command: |
