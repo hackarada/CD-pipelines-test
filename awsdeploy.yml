@@ -2,7 +2,7 @@
 - name: Aws Ansible - Python project 
   # hosts: ubuntu
   # Use the public IP if the VM is already created
-  hosts: 44.204.17.237
+  hosts: ubuntu
   user: ubuntu
   become: true
   become_method: sudo
