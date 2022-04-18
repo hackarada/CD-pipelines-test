@@ -42,6 +42,14 @@ jobs:
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
         - update_inventory
+        - run:
+            name: check per2
+            command: |
+              ls ~/
+        - run:
+            name: check per2
+            command: |
+              cat ~/project/inventory.txt        
         - destroy_infra
   configure_infrastructure: 
     docker:
@@ -59,7 +67,11 @@ jobs:
       - run:
           name: check per
           command: |
-             cat ~/project/inventory.txt
+            ls ~/
+      - run:
+          name: check per
+          command: |
+            cat ~/project/inventory.txt      
       - run:
           name: Run Playbook and Configure server
           command: |
