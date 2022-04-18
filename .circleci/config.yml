@@ -15,7 +15,7 @@ commands:
       - run:
           name: create inventory file
           command: |
-            echo "[ubuntu]" > inventory.txt
+            echo "[all]" > inventory.txt
       - run:
           name: update inventory with ips
           command: |
