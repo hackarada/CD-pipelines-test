@@ -19,7 +19,7 @@ commands:
       - run:
           name: update inventory with ips
           command: |
-            aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --output text >> inventory.txt
+            aws ec2 describe-instances --query "Reservations[*].Instances[*].PublicIpAddress" --output text
       - persist_to_workspace:
           root: ~/project
           paths: 
@@ -67,7 +67,7 @@ jobs:
       - run:
           name: check per
           command: |
-            ls ~/
+            ls ~/project
       - run:
           name: check per
           command: |
@@ -76,7 +76,7 @@ jobs:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i inventory.txt awsdeploy.yml
-      - update_inventory
+      - destroy_infra
 workflows:
   on_commit:
     jobs:
