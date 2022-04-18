@@ -1,0 +1,29 @@
+---
+- name: "update apt packages."
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: "upgrade packages"
+  become: yes
+  apt:
+    upgrade: yes
+- name: "install dependencies."
+  become: yes
+  apt:
+    name: ["postgresql", "postgresql-contrib"]
+    state: latest
+    update_cache: yes
+- name: remove dependencies that are no longer required
+  become: yes
+  apt:
+    autoremove: yes
+
+- name: install pipenv
+  become: yes
+  shell: |
+    pip install pipenv
+- name: Installing dependencies
+  become: yes
+  shell: |
+    pipenv install       
