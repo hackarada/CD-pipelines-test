@@ -59,7 +59,7 @@ jobs:
       - run:
           name: check per
           command: |
-            ls ~/project      
+             cat ~/project/inventory.txt
       - run:
           name: Run Playbook and Configure server
           command: |
