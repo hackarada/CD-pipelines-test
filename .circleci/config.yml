@@ -45,7 +45,7 @@ jobs:
         - run:
             name: check per2
             command: |
-              ls ~/
+              ls ~/project
         - run:
             name: check per2
             command: |
@@ -76,6 +76,7 @@ jobs:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i inventory.txt awsdeploy.yml
+      - update_inventory
 workflows:
   on_commit:
     jobs:
