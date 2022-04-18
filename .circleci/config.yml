@@ -57,6 +57,10 @@ jobs:
       - attach_workspace:
           at: ~/project
       - run:
+          name: check per
+          command: |
+            ls ~/project      
+      - run:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i inventory.txt awsdeploy.yml
