@@ -5,7 +5,7 @@ Resources:
     Type: AWS::EC2::Instance
     CreationPolicy: # <--- creation policy with timeout of 5 minutes
       ResourceSignal:
-        Timeout: PT5M    
+        Timeout: PT1M    
     Metadata:
       'AWS::CloudFormation::Init':
         config:
