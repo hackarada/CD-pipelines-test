@@ -23,5 +23,8 @@ Resources:
           CidrIp: 0.0.0.0/0
 Outputs:
   PublicIp:
-    Value: !GetAtt EC2Instance.PublicIp
-    Export: !Sub "${AWS::StackName}-PublicIp"
+    Value:
+      Fn::GetAtt:
+        - EC2Instance
+        - PublicIp
+    Description: EC2Instance's PublicIp Address
