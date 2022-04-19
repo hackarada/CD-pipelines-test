@@ -22,33 +22,36 @@ Resources:
       KeyName: personal-east-ansible
       # Change this, as applicable to you
       # You may need to find out what instance types are available in your region - use https://cloud-images.ubuntu.com/locator/ec2/
-      ImageId: ami-04505e74c0741db8d
+      ImageId: ami-04505e74c0741db8d #Ubuntu Server 20.04 LTS (HVM), SSD Volume Type
       InstanceType: t3.micro 
-      UserData: !Base64 
-        'Fn::Join':
+      UserData:
+        Fn::Base64:
+          Fn::Join:
           - ''
-          - - |
-              #!/bin/bash -x
-            - |
-              # Install the files and packages from the metadata
-            - yum install -y aws-cfn-bootstrap
-            - '/opt/aws/bin/cfn-init -v '
-            - '         --stack '
-            - !Ref 'AWS::StackName'
-            - '         --resource EC2Instance '
-            - '         --region '
-            - !Ref 'AWS::Region'
-            - |+
-
-            - |
-              # Signal the status from cfn-init
-            - '/opt/aws/bin/cfn-signal -e $? '
-            - '         --stack '
-            - !Ref 'AWS::StackName'
-            - '         --resource EC2Instance '
-            - '         --region '
-            - !Ref 'AWS::Region'
-            - |+    
+          - - "#!/bin/bash -xe\n"
+            - 'apt-get update -y
+              '
+            - 'mkdir -p /opt/aws/bin
+              '
+            - 'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
+              '
+            - 'python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz
+              '
+            - "/opt/aws/bin/cfn-init -v "
+            - "         --stack "
+            - Ref: AWS::StackName
+            - "         --resource EC2Instance "
+            - "         --configsets full_install "
+            - "         --region "
+            - Ref: AWS::Region
+            - "\n"
+            - "/opt/aws/bin/cfn-signal -e $? "
+            - "         --stack "
+            - Ref: AWS::StackName
+            - "         --resource EC2Instance "
+            - "         --region "
+            - Ref: AWS::Region
+            - "\n"   
   InstanceSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
