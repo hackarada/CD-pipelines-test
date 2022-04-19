@@ -44,11 +44,7 @@ jobs:
                 --template-file template.yml \
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
-        - destroy_infra
-        - run:
-            name: Take a nap while instance intializes
-            command: |
-              sleep 1m        
+        - destroy_infra      
   update_inventory:
     docker:
       - image: amazon/aws-cli
