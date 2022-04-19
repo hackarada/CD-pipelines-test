@@ -38,7 +38,7 @@ jobs:
           command: |
             echo "[all]" > ~/inventory.txt
       - run:
-          name: fetch exported IP
+          name: update inventory with id
           command: |
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
@@ -49,9 +49,9 @@ jobs:
           command: |
             cat ~/inventory.txt
       - persist_to_workspace:
-          root: .
+          root: ~/
           paths: 
-            - .
+            - inventory.txt
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
