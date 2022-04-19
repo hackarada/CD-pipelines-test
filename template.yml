@@ -3,9 +3,9 @@ Description: Basic AWS Infrastructure for deployment
 Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
-    CreationPolicy: # <--- creation policy with timeout of 5 minutes
-      ResourceSignal:
-        Timeout: PT1M    
+    # CreationPolicy: # <--- creation policy with timeout of 5 minutes
+    #   ResourceSignal:
+    #     Timeout: PT1M    
     Properties:
       SecurityGroups:
         - !Ref InstanceSecurityGroup
@@ -15,14 +15,14 @@ Resources:
       # You may need to find out what instance types are available in your region - use https://cloud-images.ubuntu.com/locator/ec2/
       ImageId: ami-04505e74c0741db8d #Ubuntu Server 20.04 LTS (HVM), SSD Volume Type
       InstanceType: t3.micro 
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          sudo apt-get update -y
-          sudo mkdir -p /opt/aws/bin
-          sudo wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
-          sudo python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz
-          sudo /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region}
+      # UserData:
+      #   Fn::Base64: !Sub |
+      #     #!/bin/bash
+      #     sudo apt-get update -y
+      #     sudo mkdir -p /opt/aws/bin
+      #     sudo wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
+      #     sudo python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz
+      #     sudo /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region}
       # UserData: !Base64 
       #   'Fn::Sub':
       #     - >
