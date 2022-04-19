@@ -110,7 +110,10 @@ workflows:
   on_commit:
     jobs:
       - create_infrastructure
-      - configure_infrastructure:
-           requires:
+      - update_inventory:
+          requires:
             - create_infrastructure
+      - configure_infrastructure:
+          requires:
+            - update_inventory
 
