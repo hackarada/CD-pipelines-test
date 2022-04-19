@@ -40,9 +40,10 @@ jobs:
       - run:
           name: fetch exported IP
           command: |
-            aws cloudformation \
-            list-exports --query "Exports[?Name==\`PublicIp\`].Value" \
-            --no-paginate --output text
+            aws cloudformation list-exports \
+            --query "Exports[?Name==\`PublicIp\`].Value" \
+            --no-paginate --output text \
+            --region us-east-1
       - run:
           name: check per2
           command: |
@@ -65,7 +66,7 @@ jobs:
       - run:
           name: check per2
           command: |
-            cat inventory.txt 
+            cat ~/inventory.txt 
       - add_ssh_keys:
           fingerprints: ["a3:00:a7:22:fc:4a:5b:50:bb:ec:37:72:60:67:bc:96"] 
       - run:
