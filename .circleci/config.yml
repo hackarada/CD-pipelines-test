@@ -52,8 +52,9 @@ jobs:
             name: check update
             command: |
               aws cloudformation wait stack-create-complete \
-                --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+                --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
+        - destroy_infra
         - update_inventory
         - run:
             name: check per2
