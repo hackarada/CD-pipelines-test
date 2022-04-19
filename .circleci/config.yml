@@ -48,23 +48,16 @@ jobs:
                 --template-file template.yml \
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
-        - run:
-            name: check update
-            command: |
-              aws cloudformation wait stack-create-complete \
-                --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
-                --region us-east-1
         - destroy_infra
+        - run:
+            name: Take a nap while instance intializes
+            command: |
+              sleep 1m        
         - update_inventory
         - run:
             name: check per2
             command: |
-              ls .
-        - run:
-            name: check per2
-            command: |
               cat inventory        
-        - destroy_infra
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
@@ -77,14 +70,6 @@ jobs:
           name: Install Ansible
           command: |
             apk add --update ansible
-      - run:
-          name: check per
-          command: |
-            ls ~/project
-      - run:
-          name: check per
-          command: |
-            cat ~/project/inventory.txt      
       - run:
           name: Run Playbook and Configure server
           command: |
