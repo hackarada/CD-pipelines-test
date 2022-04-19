@@ -11,26 +11,6 @@ commands:
           command: |
             aws cloudformation delete-stack \
               --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
-  update_inventory:
-    steps:
-      - run:
-          name: create inventory file
-          command: |
-            echo "[all]" > inventory
-      - run:
-          name: update inventory with ips
-          command: |
-            aws cloudformation describe-stacks \
-                --query 'Stacks[0].Outputs[?OutputKey==`PublicIp`].OutputValue'  \
-                --output text >> inventory
-      - run:
-          name: list inventory file
-          command: |
-            cat inventory
-      - persist_to_workspace:
-          root: .
-          paths: 
-            - .
 jobs:
   create_infrastructure: 
       docker:
@@ -58,11 +38,11 @@ jobs:
           command: |
             echo "[all]" > ~/project/inventory
       - run:
-          name: update inventory with ips
+          name: Fetch and save the old pipeline ID (bucket name) responsible for the last release.
           command: |
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress'  \
-              --output text >> ~/project/inventory
+            aws cloudformation \
+            list-exports --query "Exports[?Name==\`PublicIp\`].Value" \
+            --no-paginate --output text > ~/project/inventory
       - persist_to_workspace:
           root: ~/project
           paths: 
