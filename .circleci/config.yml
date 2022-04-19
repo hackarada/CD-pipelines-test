@@ -69,9 +69,9 @@ jobs:
                 --query 'Reservations[*].Instances[*].PublicIpAddress'  \
                 --output text >> ~/project/inventory
       - persist_to_workspace:
-          root: .
+          root: ~/project
           paths: 
-            - .           
+            - inventory 
       - run:
           name: check per2
           command: |
@@ -81,7 +81,7 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - attach_workspace:
-          at: .
+          at: ~/project
       - run:
           name: check per2
           command: |
@@ -99,7 +99,7 @@ jobs:
       - run:
           name: Run Playbook and Configure server
           command: |
-            ansible-playbook -i inventory awsdeploy.yml
+            ansible-playbook -i ~/project/inventory awsdeploy.yml
       - destroy_infra
 workflows:
   on_commit:
