@@ -29,15 +29,15 @@ Resources:
           Fn::Join:
           - ''
           - - "#!/bin/bash -xe\n"
-            - 'apt-get update -y
+            - 'sudo apt-get update -y
               '
-            - 'mkdir -p /opt/aws/bin
+            - 'sudo mkdir -p /opt/aws/bin
               '
             - 'wget https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
               '
-            - 'python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz
+            - 'sudo python3 -m easy_install --script-dir /opt/aws/bin aws-cfn-bootstrap-py3-latest.tar.gz
               '
-            - "/opt/aws/bin/cfn-init -v "
+            - "sudo /opt/aws/bin/cfn-init -v "
             - "         --stack "
             - Ref: AWS::StackName
             - "         --resource EC2Instance "
@@ -45,7 +45,7 @@ Resources:
             - "         --region "
             - Ref: AWS::Region
             - "\n"
-            - "/opt/aws/bin/cfn-signal -e $? "
+            - "sudo /opt/aws/bin/cfn-signal -e $? "
             - "         --stack "
             - Ref: AWS::StackName
             - "         --resource EC2Instance "
