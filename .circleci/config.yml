@@ -61,26 +61,21 @@ jobs:
       - run:
           name: create inventory file
           command: |
-            echo "[all]" > inventory
+            echo "[all]" > ~/project/inventory
       - run:
           name: update inventory with ips
           command: |
-            aws cloudformation describe-stacks \
-                --query 'Stacks[0].Outputs[?OutputKey==`PublicIp`].OutputValue'  \
-                --output text >> inventory
+            aws ec2 describe-instances \
+                --query 'Reservations[*].Instances[*].PublicIpAddress'  \
+                --output text >> ~/project/inventory
       - persist_to_workspace:
           root: .
           paths: 
-            - .      
-      - run:
-          name: Take a nap while instance intializes
-          command: |
-            sleep 1m        
+            - .           
       - run:
           name: check per2
           command: |
             cat inventory 
-
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
@@ -104,7 +99,7 @@ jobs:
       - run:
           name: Run Playbook and Configure server
           command: |
-            ansible-playbook -i inventory.txt awsdeploy.yml
+            ansible-playbook -i inventory awsdeploy.yml
       - destroy_infra
 workflows:
   on_commit:
