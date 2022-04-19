@@ -41,7 +41,7 @@ jobs:
           name: Fetch and save the old pipeline ID (bucket name) responsible for the last release.
           command: |
             aws cloudformation \
-            list-exports --query "Exports[?Name=='PublicIp'].Value" \
+            list-exports --query "Exports[?Name==\`PublicIp\`].Value" \
             --no-paginate --output text >> ~/project/inventory.txt
       - persist_to_workspace:
           root: .
