@@ -36,28 +36,28 @@ jobs:
       - run:
           name: create inventorinventory y file
           command: |
-            echo "[all]" > ~/project/inventory.txt
+            echo "[all]" > ~/inventory.txt
       - run:
-          name: Fetch and save the old pipeline ID (bucket name) responsible for the last release.
+          name: fetch exported IP
           command: |
             aws cloudformation \
             list-exports --query "Exports[?Name==\`PublicIp\`].Value" \
-            --no-paginate --output text >> ~/project/inventory.txt
-      - persist_to_workspace:
-          root: .
-          paths: 
-            - . 
+            --no-paginate --output text
       - run:
           name: check per2
           command: |
-            cat ~/project/inventory.txt
+            cat ~/inventory.txt
+      - persist_to_workspace:
+          root: .
+          paths: 
+            - .
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      # - checkout
+      - checkout
       - attach_workspace:
-          at: .
+          at: ~/
       - run:
           name: check per2
           command: |
@@ -75,7 +75,7 @@ jobs:
       - run:
           name: Run Playbook and Configure server
           command: |
-            ansible-playbook -i inventory.txt awsdeploy.yml
+            ansible-playbook -i ~/inventory.txt awsdeploy.yml
       - destroy_infra
 workflows:
   on_commit:
