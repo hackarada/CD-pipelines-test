@@ -34,30 +34,30 @@ jobs:
           command: |
             yum install -y tar gzip        
       - run:
-          name: create inventory file
+          name: create inventorinventory y file
           command: |
-            echo "[all]" > ~/project/inventory
+            echo "[all]" > ~/project/inventory.txt
       - run:
           name: Fetch and save the old pipeline ID (bucket name) responsible for the last release.
           command: |
             aws cloudformation \
-            list-exports --query "Exports[?Name==\`PublicIp\`].Value" \
-            --no-paginate --output text > ~/project/inventory
+            list-exports --query "Exports[?Name=='PublicIp'].Value" \
+            --no-paginate --output text >> ~/project/inventory.txt
       - persist_to_workspace:
-          root: ~/project
+          root: .
           paths: 
-            - inventory 
+            - . 
       - run:
           name: check per2
           command: |
-            cat inventory 
+            cat ~/project/inventory.txt
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
     steps:
-      - checkout
+      # - checkout
       - attach_workspace:
-          at: ~/project
+          at: .
       - run:
           name: check per2
           command: |
@@ -65,7 +65,7 @@ jobs:
       - run:
           name: check per2
           command: |
-            cat inventory 
+            cat inventory.txt 
       - add_ssh_keys:
           fingerprints: ["a3:00:a7:22:fc:4a:5b:50:bb:ec:37:72:60:67:bc:96"] 
       - run:
@@ -75,7 +75,7 @@ jobs:
       - run:
           name: Run Playbook and Configure server
           command: |
-            ansible-playbook -i ~/project/inventory awsdeploy.yml
+            ansible-playbook -i inventory.txt awsdeploy.yml
       - destroy_infra
 workflows:
   on_commit:
