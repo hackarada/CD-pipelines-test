@@ -3,9 +3,9 @@ Description: Basic AWS Infrastructure for deployment
 Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
-    # CreationPolicy: # <--- creation policy with timeout of 5 minutes
-    #   ResourceSignal:
-    #     Timeout: PT2M    
+    CreationPolicy: # <--- creation policy with timeout of 5 minutes
+      ResourceSignal:
+        Timeout: PT2M    
     Properties:
       SecurityGroups:
         - !Ref InstanceSecurityGroup
