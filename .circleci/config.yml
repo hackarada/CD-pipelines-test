@@ -20,8 +20,8 @@ commands:
       - run:
           name: update inventory with ips
           command: |
-            aws ec2 describe-instances \
-                --query "Reservations[*].Instances[*].PublicIpAddress" \
+            aws cloudformation describe-stacks \
+                --query 'Stacks[0].Outputs[?OutputKey==`PublicIp`].OutputValue'  \
                 --output text >> inventory
       - run:
           name: list inventory file
