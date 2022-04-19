@@ -61,8 +61,8 @@ jobs:
           name: update inventory with ips
           command: |
             aws ec2 describe-instances \
-                --query 'Reservations[*].Instances[*].PublicIpAddress'  \
-                --output text >> ~/project/inventory
+              --query 'Reservations[*].Instances[*].PublicIpAddress'  \
+              --output text >> ~/project/inventory
       - persist_to_workspace:
           root: ~/project
           paths: 
