@@ -36,11 +36,7 @@ jobs:
       docker:
         - image: amazon/aws-cli
       steps:
-        - checkout
-        - run:
-            name: Install tar utility
-            command: |
-              yum install -y tar gzip        
+        - checkout    
         - run:
             name: Create Cloudformation Stack
             command: |
@@ -53,17 +49,52 @@ jobs:
             name: Take a nap while instance intializes
             command: |
               sleep 1m        
-        - update_inventory
-        - run:
-            name: check per2
-            command: |
-              cat inventory        
+  update_inventory:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip        
+      - run:
+          name: create inventory file
+          command: |
+            echo "[all]" > inventory
+      - run:
+          name: update inventory with ips
+          command: |
+            aws cloudformation describe-stacks \
+                --query 'Stacks[0].Outputs[?OutputKey==`PublicIp`].OutputValue'  \
+                --output text >> inventory
+      - persist_to_workspace:
+          root: .
+          paths: 
+            - .      
+      - run:
+          name: Take a nap while instance intializes
+          command: |
+            sleep 1m        
+      - run:
+          name: check per2
+          command: |
+            cat inventory 
+
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
     steps:
       - attach_workspace:
           at: .
+      - run:
+          name: check per2
+          command: |
+            ls  
+      - run:
+          name: check per2
+          command: |
+            cat inventory 
       - add_ssh_keys:
           fingerprints: ["a3:00:a7:22:fc:4a:5b:50:bb:ec:37:72:60:67:bc:96"] 
       - run:
