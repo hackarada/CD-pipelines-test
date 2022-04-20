@@ -133,11 +133,12 @@ jobs:
           command: |
             export OldBucketID=$(cat ~/textfile.txt)
             aws s3 rm "s3://${OldBucketID}" --recursive
+  #Test
   smoke_test:
     docker:
       - image: amazon/aws-cli
     steps:
-      - run: apk add --update curl
+      - run: yum install -y curl
       - run:
           name: smoke test
           command: |
@@ -159,8 +160,12 @@ workflows:
             - create_infrastructure
       - configure_infrastructure:
           requires:
+            - create_infrastructure
             - build_inventory
       - smoke_test
+          requires:
+            - create_infrastructure
+            - configure_infrastructure
       - create_and_deploy_front_end
       - promote_to_production:
           requires: 
