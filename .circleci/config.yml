@@ -35,20 +35,21 @@ jobs:
           command: |
             yum install -y tar gzip        
       - run:
-          name: create inventorinventory y file
-          command: |
-            echo "[all]" > ~/inventory.txt
-      - run:
           name: update inventory with id
           command: |
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text \
             --region us-east-1 >> ~/inventory.txt
+      - destroy_infra
+      - run:
+          name: create inventorinventory y file
+          command: |
+            echo "[all]" > ~/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths: 
-            - inventory.txt
+            - inventory.txt      
   configure_infrastructure: 
     docker:
       - image: python:3.7-alpine3.11
@@ -115,6 +116,7 @@ jobs:
               --stack-name production-distro \
               --region us-east-1 \
               --parameter-overrides PipelineID="mybucket-${CIRCLE_WORKFLOW_ID:0:7}"            
+      - destroy_infra
   # Destroy the previous production version's S3 bucket and CloudFormation stack. 
   clean_up_old_front_end:
     docker:
@@ -131,7 +133,6 @@ jobs:
           command: |
             export OldBucketID=$(cat ~/textfile.txt)
             aws s3 rm "s3://${OldBucketID}" --recursive
-  
   smoke_test:
     docker:
       - image: amazon/aws-cli
@@ -148,7 +149,7 @@ jobs:
             else
               return 1
             fi
-      - destroy_environment   
+      - destroy_infra   
 workflows:
   on_commit:
     jobs:
