@@ -24,6 +24,7 @@ jobs:
                 --template-file template.yml \
                 --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
                 --region us-east-1
+        - destroy_infra
   build_inventory:
     docker:
       - image: amazon/aws-cli
@@ -44,10 +45,6 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text \
             --region us-east-1 >> ~/inventory.txt
-      - run:
-          name: check per2
-          command: |
-            cat ~/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths: 
@@ -59,10 +56,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/ 
-      - run:
-          name: check per2
-          command: |
-            cat ~/inventory.txt 
       - add_ssh_keys:
           fingerprints: ["a3:00:a7:22:fc:4a:5b:50:bb:ec:37:72:60:67:bc:96"] 
       - run:
@@ -139,33 +132,34 @@ jobs:
             export OldBucketID=$(cat ~/textfile.txt)
             aws s3 rm "s3://${OldBucketID}" --recursive
   
-  # smoke_test:
-  #   docker:
-  #     - image: alpine:latest
-  #   steps:
-  #     - run: apk add --update curl
-  #     - run:
-  #         name: smoke test
-  #         command: |
-  #           URL="https://www.google.com/"
-  #           # Test if website exists
-  #           if curl -s --head ${URL} 
-  #           then
-  #             return 0
-  #           else
-  #             return 1
-  #           fi  
+  smoke_test:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - run: apk add --update curl
+      - run:
+          name: smoke test
+          command: |
+            URL="https://www.google.com/"
+            # Test if website exists
+            if curl -s --head ${URL} 
+            then
+              return 0
+            else
+              return 1
+            fi
+      - destroy_environment   
 workflows:
   on_commit:
     jobs:
-      # - create_infrastructure
-      # - build_inventory:
-      #     requires:
-      #       - create_infrastructure
-      # - configure_infrastructure:
-      #     requires:
-      #       - build_inventory
-      # - smoke_test
+      - create_infrastructure
+      - build_inventory:
+          requires:
+            - create_infrastructure
+      - configure_infrastructure:
+          requires:
+            - build_inventory
+      - smoke_test
       - create_and_deploy_front_end
       - promote_to_production:
           requires: 

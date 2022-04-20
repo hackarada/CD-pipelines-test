@@ -9,7 +9,6 @@ Resources:
     Properties:
       SecurityGroups:
         - !Ref InstanceSecurityGroup
-      # Change this, as applicable to you      
       KeyName: personal-east-ansible
       ImageId: ami-04505e74c0741db8d #Ubuntu Server 20.04 LTS (HVM), SSD Volume Type
       InstanceType: t3.micro 

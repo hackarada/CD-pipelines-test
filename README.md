@@ -1,2 +1,2 @@
 # pythonAnsible101
-just testing aws ansible python
+CFN-Ansible-circleci - Blue-Green test

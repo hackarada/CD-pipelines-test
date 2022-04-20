@@ -3,7 +3,6 @@
   become: yes
   apt:
     update_cache: yes
-
 - name: "upgrade packages"
   become: yes
   apt:
@@ -28,7 +27,7 @@
   become: yes
   shell: |
     pip install pipenv
-- name: Installing dependencies
-  become: yes
-  shell: |
-    pipenv install       
+# - name: Installing dependencies
+#   become: yes
+#   shell: |
+#     pipenv install       
