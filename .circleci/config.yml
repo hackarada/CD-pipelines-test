@@ -79,7 +79,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - run: apk add --update curl
+      - run: yum install -y curl
       - run:
           name: smoke test
           command: |
@@ -98,7 +98,6 @@ jobs:
               --stack-name stack-create-bucket-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides MyBucketName="mybucket-${CIRCLE_WORKFLOW_ID:0:7}" \
               --region us-east-1
-    # Uncomment the step below if yoou wish to upload all contents of the current directory to the S3 bucket
       - run: aws s3 sync ./frontend/ s3://mybucket-${CIRCLE_WORKFLOW_ID:0:7} --delete
   # Fetch and save the pipeline ID (bucket ID) responsible for the last release.
   get_last_deployment_id:

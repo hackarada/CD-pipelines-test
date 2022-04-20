@@ -29,4 +29,7 @@ Outputs:
   PipelineID:
     Value: !Sub ${PipelineID}
     Export:
-      Name: PipelineID
+      Name: PipelineID   
+  CloudFrontEndpoint:
+    Description: Endpoint for Cloudfront Distribution
+    Value: !Ref 'WebpageCDN'  
