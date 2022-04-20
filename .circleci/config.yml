@@ -1,7 +1,6 @@
 version: 2.1
-orbs:
-  aws-cli: circleci/aws-cli@2.0.3
-  # python: circleci/python@1.5.0
+# orbs:
+#   aws-cli: circleci/aws-cli@2.0.3
 commands:
   destroy_infra:
     steps:
@@ -11,20 +10,21 @@ commands:
           command: |
             aws cloudformation delete-stack \
               --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+              --region us-east-1
 jobs:
   create_infrastructure: 
-      docker:
-        - image: amazon/aws-cli
-      steps:
-        - checkout    
-        - run:
-            name: Create Cloudformation Stack
-            command: |
-              aws cloudformation deploy \
-                --template-file template.yml \
-                --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
-                --region us-east-1
-        - destroy_infra
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout    
+      - run:
+          name: Create Cloudformation Stack
+          command: |
+            aws cloudformation deploy \
+              --template-file template.yml \
+              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+              --region us-east-1
+      - destroy_infra
   build_inventory:
     docker:
       - image: amazon/aws-cli
@@ -41,6 +41,13 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text \
             --region us-east-1 >> ~/inventory.txt
+      # - run:
+      #     name: Fetch and save the old pipeline ID (bucket name) responsible for the last release.
+      #     command: |
+      #       aws cloudformation list-exports \
+      #         --query "Stacks[0].Outputs[?OutputKey==\`PublicIp\`].OutputValue" \
+      #         --region us-east-1 \
+      #         --no-paginate --output text > ~/textfile.txt
       - destroy_infra
       - run:
           name: create inventorinventory y file
@@ -67,6 +74,16 @@ jobs:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i ~/inventory.txt awsdeploy.yml
+  smoke_test:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - run: apk add --update curl
+      - run:
+          name: smoke test
+          command: |
+            ./tests/smoke.sh
+      - destroy_infra                  
   create_and_deploy_front_end:
     docker:
       - image: amazon/aws-cli
@@ -81,7 +98,7 @@ jobs:
               --parameter-overrides MyBucketName="mybucket-${CIRCLE_WORKFLOW_ID:0:7}" \
               --region us-east-1
     # Uncomment the step below if yoou wish to upload all contents of the current directory to the S3 bucket
-      - run: aws s3 sync . s3://mybucket-${CIRCLE_WORKFLOW_ID:0:7} --delete
+      - run: aws s3 sync ./frontend/ s3://mybucket-${CIRCLE_WORKFLOW_ID:0:7} --delete
   # Fetch and save the pipeline ID (bucket ID) responsible for the last release.
   get_last_deployment_id:
     docker:
@@ -116,7 +133,6 @@ jobs:
               --stack-name production-distro \
               --region us-east-1 \
               --parameter-overrides PipelineID="mybucket-${CIRCLE_WORKFLOW_ID:0:7}"            
-      - destroy_infra
   # Destroy the previous production version's S3 bucket and CloudFormation stack. 
   clean_up_old_front_end:
     docker:
@@ -133,24 +149,7 @@ jobs:
           command: |
             export OldBucketID=$(cat ~/textfile.txt)
             aws s3 rm "s3://${OldBucketID}" --recursive
-  #Test
-  smoke_test:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - run: yum install -y curl
-      - run:
-          name: smoke test
-          command: |
-            URL="https://www.google.com/"
-            # Test if website exists
-            if curl -s --head ${URL} 
-            then
-              return 0
-            else
-              return 1
-            fi
-      - destroy_infra   
+  #Test  
 workflows:
   on_commit:
     jobs:
@@ -160,7 +159,6 @@ workflows:
             - create_infrastructure
       - configure_infrastructure:
           requires:
-            - create_infrastructure
             - build_inventory
       - smoke_test:
           requires:
