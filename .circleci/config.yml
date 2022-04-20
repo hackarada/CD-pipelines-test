@@ -162,7 +162,7 @@ workflows:
           requires:
             - create_infrastructure
             - build_inventory
-      - smoke_test
+      - smoke_test:
           requires:
             - create_infrastructure
             - configure_infrastructure
