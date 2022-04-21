@@ -152,7 +152,7 @@ jobs:
             #aws cloudformation list-stacks --query 'StackSummaries[?contains(StackName, `stack-create-bucket-`) == `true`].StackName' --stack-status-filter CREATE_COMPLETE --output text
             export OldBucketStack=$(aws s3api get-bucket-tagging --bucket ${OldBucketID} --query "TagSet[?Key==\`aws:cloudformation:stack-name\`].Value")
             aws s3 rm "s3://${OldBucketID}" --recursive
-            aws cloudformation delete-stack --stack-name "${OldBucketID}"
+            aws cloudformation delete-stack --stack-name "${OldBucketStack}"
 workflows:
   on_commit:
     jobs:
