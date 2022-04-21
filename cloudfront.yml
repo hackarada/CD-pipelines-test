@@ -32,4 +32,4 @@ Outputs:
       Name: PipelineID   
   CloudFrontEndpoint:
     Description: Endpoint for Cloudfront Distribution
-    Value: !Ref 'WebpageCDN'
+    Value: !GetAtt WebpageCDN.DomainName
