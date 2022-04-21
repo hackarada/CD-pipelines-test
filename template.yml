@@ -51,3 +51,4 @@ Outputs:
     # Export:
     #   Name: PublicIp
     Description: EC2Instance's PublicIp Address
+    
