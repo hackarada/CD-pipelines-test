@@ -154,7 +154,8 @@ jobs:
       - run:
           name: delete bucket craetion stack
           command: |
-            aws cloudformation delete-stack --stack-name "${OldBucketStack}"
+            export OldBucketStack=$(aws s3api get-bucket-tagging --bucket ${OldBucketID} --query "TagSet[?Key==\`aws:cloudformation:stack-name\`].Value" --output text)
+            aws cloudformation delete-stack --stack-name ${OldBucketStack}
 workflows:
   on_commit:
     jobs:
