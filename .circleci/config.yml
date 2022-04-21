@@ -84,7 +84,8 @@ jobs:
       - run:
           name: smoke test
           command: |
-            sudo ./tests/smoke.sh
+            chmod +x ./tests/smoke.sh
+            ./tests/smoke.sh
       - destroy_infra                  
   create_and_deploy_front_end:
     docker:
@@ -150,7 +151,7 @@ jobs:
             export OldBucketID=$(cat ~/textfile.txt)
             export OldBucketStack=$(aws s3api get-bucket-tagging --bucket ${OldBucketID} --query "TagSet[?Key==\`aws:cloudformation:stack-name\`].Value")
             aws s3 rm "s3://${OldBucketID}" --recursive
-            aws cloudformation delete-stack --stack-name OldBucketStack
+            aws cloudformation delete-stack --stack-name ${OldBucketID}
 workflows:
   on_commit:
     jobs:
