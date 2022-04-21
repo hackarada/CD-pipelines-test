@@ -75,6 +75,7 @@ jobs:
           name: Run Playbook and Configure server
           command: |
             ansible-playbook -i ~/inventory.txt awsdeploy.yml
+  #Just a placeholder for now
   smoke_test:
     docker:
       - image: amazon/aws-cli
@@ -152,10 +153,10 @@ jobs:
             #aws cloudformation list-stacks --query 'StackSummaries[?contains(StackName, `stack-create-bucket-`) == `true`].StackName' \--stack-status-filter CREATE_COMPLETE --output text
             aws s3 rm "s3://${OldBucketID}" --recursive
       - run:
-          name: delete bucket craetion stack
+          name: delete bucket creation stack
           command: |
-            export OldBucketStack=$(aws s3api get-bucket-tagging --bucket ${OldBucketID} --query "TagSet[?Key==\`aws:cloudformation:stack-name\`].Value" --output text)
-            aws cloudformation delete-stack --stack-name ${OldBucketStack}
+            export OldBucketStack=$(aws s3api get-bucket-tagging --bucket=${OldBucketID} --query "TagSet[?Key==\`aws:cloudformation:stack-name\`].Value" --output text)
+            aws cloudformation delete-stack --stack-name="${OldBucketStack}"
 workflows:
   on_commit:
     jobs:
