@@ -5,8 +5,8 @@ STATUS=$(curl -o /dev/null -s -w '%{http_code}\n' $URL)
 if [ $STATUS -eq 200 ];
 then
     echo 'Smoke Tests Successfully Completed.'
-    return 0
+    exit 0
 else
     echo "Error getting to $URL"
-    return 1
+    exit 1
 fi
